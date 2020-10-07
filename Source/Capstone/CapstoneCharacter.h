@@ -18,6 +18,7 @@ class ACapstoneCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
 public:
 	ACapstoneCharacter();
 
@@ -29,6 +30,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Temp)
+		TSubclassOf<AActor> temp;
 protected:
 
 	/** Resets HMD orientation in VR. */
@@ -57,6 +60,8 @@ protected:
 
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
+
+	void TestFunc();
 
 protected:
 	// APawn interface

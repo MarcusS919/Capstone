@@ -74,6 +74,8 @@ void ACapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACapstoneCharacter::OnResetVR);
+
+	PlayerInputComponent->BindAction("TestAction", IE_Pressed, this, &ACapstoneCharacter::TestFunc);
 }
 
 
@@ -130,5 +132,12 @@ void ACapstoneCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+void ACapstoneCharacter::TestFunc() {
+	if (Controller != NULL)
+	{
+		AActor* spawnActor = GetWorld()->SpawnActor<AActor>(temp, this->GetActorLocation(), this->GetActorRotation());
 	}
 }

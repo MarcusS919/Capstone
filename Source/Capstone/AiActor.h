@@ -17,7 +17,7 @@ class CAPSTONE_API AAiActor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AAiActor();
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Type")
 		bool isRanged;
 
