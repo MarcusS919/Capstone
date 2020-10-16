@@ -135,7 +135,7 @@ void ACapstoneCharacter::MoveRight(float Value)
 	}
 }
 
-void ACapstoneCharacter::TestFunc() {
+void ACapstoneCharacter::TestFunc_Implementation() {
 	if (Controller != NULL)
 	{
 		AActor* spawnActor = GetWorld()->SpawnActor<AActor>(temp, this->GetActorLocation(), this->GetActorRotation());

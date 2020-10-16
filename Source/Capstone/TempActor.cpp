@@ -27,5 +27,8 @@ void ATempActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	ActorLocation = GetActorLocation();
+	ActorLocation.X += 10.0f;
+	SetActorLocation(ActorLocation, true);
 }
 

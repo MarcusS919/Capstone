@@ -18,8 +18,17 @@ public:
 	// Sets default values for this actor's properties
 	AAiActor();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Type")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Info")
 		bool isRanged;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Info")
+		FVector targetVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Info")
+		FVector thisVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Info")
+		float maxSpeed;
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,12 +38,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void MeleeFollow(FVector targetVector_, FVector thisVector_);
+	void MeleeFollow(FVector targetVector_, FVector thisVector_,float maxSpeed_, float DeltaTime);
 
-	void RangeFollow(FVector targetVector_, FVector thisVector_);
+	void RangeFollow(FVector targetVector_, FVector thisVector_, float maxSpeed_, float DeltaTime);
 
-	//variable to store player's current position
-	FVector targetVector;
-	FVector thisVector;
+
 
 };

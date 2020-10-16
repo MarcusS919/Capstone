@@ -61,6 +61,7 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
+	UFUNCTION(Server, Reliable)
 	void TestFunc();
 
 protected:
