@@ -36,6 +36,7 @@ void AAiActor::Tick(float DeltaTime)
 
 void AAiActor::MeleeFollow(FVector targetVector_, FVector thisVector_, float maxSpeed_, float DeltaTime) {
 
+	//to allow the NPC to follow player's position using seek
 	FVector resultPos = thisVector_;
 
 	FVector velocity = targetVector_ - thisVector_;
@@ -43,25 +44,50 @@ void AAiActor::MeleeFollow(FVector targetVector_, FVector thisVector_, float max
 	velocity.Normalize();
 	velocity *= maxSpeed_;
 
-	resultPos += (velocity * DeltaTime);
+	resultPos.X += (velocity.X * DeltaTime);
+	resultPos.Y += (velocity.Y * DeltaTime);
 
-	//SetActorLocation(FMath::Lerp(thisVector_, resultPos, 0.01), true);
 	SetActorLocation(resultPos, true);
+	
+	FRotator resultAngle;
+	resultAngle = GetActorRotation();
+
+	if (velocity.Size() > 0) {
+		resultAngle.Yaw += (atan2(-velocity.X, velocity.Z) * DeltaTime);
+		SetActorRotation(resultAngle, ETeleportType::None);
+	}
 }
 
 void AAiActor::RangeFollow(FVector targetVector_, FVector thisVector_, float maxSpeed_, float DeltaTime) {
 
 	float temp = (thisVector_ - targetVector_).Size();
-	FVector tempVector = targetVector_;
-	tempVector.X *= -1.0f;
-	tempVector.Y *= -1.0f;
 
 	if (temp < 500.0f) {
-		SetActorLocation(FMath::Lerp(thisVector_, targetVector_, 0.01), true);
+		FVector resultPos = thisVector_;
+
+		FVector velocity = targetVector_ - thisVector_;
+
+		velocity.Normalize();
+		velocity *= maxSpeed_;
+
+		resultPos.X -= (velocity.X * DeltaTime);
+		resultPos.Y -= (velocity.Y * DeltaTime);
+
+		SetActorLocation(resultPos, true);
 	}
 
 	if (temp > 500.0f) {
-		//SetActorLocation(FMath::Lerp(thisVector_, targetVector_, 0.01), true);
+		FVector resultPos = thisVector_;
+
+		FVector velocity = targetVector_ - thisVector_;
+
+		velocity.Normalize();
+		velocity *= maxSpeed_;
+
+		resultPos.X += (velocity.X * DeltaTime);
+		resultPos.Y += (velocity.Y * DeltaTime);
+
+		SetActorLocation(resultPos, true);
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Distance: %f"), temp));
