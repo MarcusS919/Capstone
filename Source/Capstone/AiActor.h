@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
 #include "Math/UnrealMathVectorCommon.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Components/SphereComponent.h"
 #include "AiActor.generated.h"
 

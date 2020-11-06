@@ -36,33 +36,51 @@ void AAiActor::Tick(float DeltaTime)
 
 void AAiActor::MeleeFollow(FVector targetVector_, FVector thisVector_, float maxSpeed_, float DeltaTime) {
 
-	//to allow the NPC to follow player's position using seek
-	FVector resultPos = thisVector_;
+	if ((thisVector_ - targetVector_).Size() > 200.0f) {
+		//to allow the NPC to follow player's position using seek
+		FVector resultPos = thisVector_;
 
-	FVector velocity = targetVector_ - thisVector_;
+		FVector velocity = targetVector_ - thisVector_;
 
-	velocity.Normalize();
-	velocity *= maxSpeed_;
+		velocity.Normalize();
+		velocity *= maxSpeed_;
 
-	resultPos.X += (velocity.X * DeltaTime);
-	resultPos.Y += (velocity.Y * DeltaTime);
+		resultPos.X += (velocity.X * DeltaTime);
+		resultPos.Y += (velocity.Y * DeltaTime);
 
-	SetActorLocation(resultPos, true);
-	
-	FRotator resultAngle;
-	resultAngle = GetActorRotation();
-
-	if (velocity.Size() > 0) {
-		resultAngle.Yaw += (atan2(-velocity.X, velocity.Z) * DeltaTime);
-		SetActorRotation(resultAngle, ETeleportType::None);
+		SetActorLocation(resultPos, true);
 	}
+
+		//make actor look at player
+
+		//FRotator resultAngle;
+		//resultAngle = this->GetActorRotation();
+
+		//if (velocity.Size() > 0) {
+		//	resultAngle.Yaw += (atan2(-velocity.X, velocity.Z) * DeltaTime);
+		//	can dampen angular velocity by a small amount to prevent it from spinning forever 
+		//	SetActorRotation(resultAngle, ETeleportType::None);
+		//}
+
+		FRotator resultRot;
+		resultRot = UKismetMathLibrary::FindLookAtRotation(thisVector_, targetVector_);
+		resultRot.Pitch = 0;
+		resultRot.Roll = 0;
+		SetActorRotation(resultRot, ETeleportType::None);
+	
+		if ((thisVector_ - targetVector_).Size() <= 200.0f) {
+			//insert attack 
+				//MeleeAttack();
+			//pause seeking for duration of attack before resuming
+
+		}
 }
 
 void AAiActor::RangeFollow(FVector targetVector_, FVector thisVector_, float maxSpeed_, float DeltaTime) {
 
 	float temp = (thisVector_ - targetVector_).Size();
 
-	if (temp < 500.0f) {
+	if (temp < 400.0f) {
 		FVector resultPos = thisVector_;
 
 		FVector velocity = targetVector_ - thisVector_;
@@ -76,7 +94,7 @@ void AAiActor::RangeFollow(FVector targetVector_, FVector thisVector_, float max
 		SetActorLocation(resultPos, true);
 	}
 
-	if (temp > 500.0f) {
+	if (temp > 600.0f) {
 		FVector resultPos = thisVector_;
 
 		FVector velocity = targetVector_ - thisVector_;
@@ -89,6 +107,30 @@ void AAiActor::RangeFollow(FVector targetVector_, FVector thisVector_, float max
 
 		SetActorLocation(resultPos, true);
 	}
+
+	if (temp <600.0f && temp >400.0f) {
+		//insert attack
+	
+		//pause seeking and fleeing for duration of attack
+		//can use SetTimer to delay functions
+	}
+
+
+	//make actor look at player
+
+//FRotator resultAngle;
+//resultAngle = this->GetActorRotation();
+
+//if (velocity.Size() > 0) {
+//	resultAngle.Yaw += (atan2(-velocity.X, velocity.Z) * DeltaTime);
+//	SetActorRotation(resultAngle, ETeleportType::None);
+//}
+
+	FRotator resultRot;
+	resultRot = UKismetMathLibrary::FindLookAtRotation(thisVector_, targetVector_);
+	resultRot.Pitch = 0;
+	resultRot.Roll = 0;
+	SetActorRotation(resultRot, ETeleportType::None);
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Distance: %f"), temp));
 }
