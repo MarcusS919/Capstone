@@ -132,5 +132,5 @@ void AAiActor::RangeFollow(FVector targetVector_, FVector thisVector_, float max
 	resultRot.Roll = 0;
 	SetActorRotation(resultRot, ETeleportType::None);
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Distance: %f"), temp));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Distance: %f"), temp));
 }
