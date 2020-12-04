@@ -2,7 +2,7 @@
 
 
 #include "PathFinding.h"
-
+#include "Engine/Engine.h"
 // Sets default values
 APathFinding::APathFinding()
 {
@@ -25,28 +25,33 @@ void APathFinding::BeginPlay()
 // Called every frame
 void APathFinding::Tick(float DeltaTime)
 {
+	
 	Super::Tick(DeltaTime);
 
 	if (Target != nullptr) {
 
-		AStarPathFinding();
+		//AStarPathFinding();
 
 		if (FinalNodeList.Num() > 0) {
 
+			//where the Ai wants to go
 			FVector destPos = FinalNodeList[0]->Position;
+
+			//where the Ai is at
 			FVector currentPos = GetActorLocation();
 			destPos.Z = currentPos.Z;
 
+			
 			FVector dir = destPos - currentPos;
 			FQuat dirQuat(dir.Rotation());
 			FQuat rot = FQuat::Slerp(GetActorQuat(), dirQuat, 5 * DeltaTime);
 
 			SetActorRotation(rot);
 
-			SetActorLocation(GetActorLocation() + (dir.GetSafeNormal() * 3.F));
+			SetActorLocation(GetActorLocation() + (dir.GetSafeNormal() * speed));
 
 			if (FVector::Distance(GetActorLocation(), destPos) < 0.001f) {
-				AStarPathFinding();
+				//AStarPathFinding();
 			}
 		}
 		else {
@@ -55,14 +60,57 @@ void APathFinding::Tick(float DeltaTime)
 	}
 }
 
+void APathFinding::Patrol(){
+	speed = 6.0f;
+	isPatroling = true;
+	AStarPathFinding();
+}
+
+void APathFinding::Chase(){
+	isPatroling = false;
+	AStarPathFinding();
+}
+
+void APathFinding::Attack(){
+	if (isRange == true) {
+		if (t == 0) {
+			AActor* spawnActor = GetWorld()->SpawnActor<AActor>(temp, this->GetActorLocation(), this->GetActorRotation());
+			t += 50;
+		}
+		else {
+			t -= 1;
+		}
+	}
+	
+}
+
+void APathFinding::flee(){
+	isFleeing = true;
+	speed = 15.0f;
+	AStarPathFinding();
+}
+
 void APathFinding::AStarPathFinding(){
-
+	
 	PathFindingNode* startNode = MyGrid->WorldToNode(GetActorLocation());
-	PathFindingNode* goalNode = MyGrid->WorldToNode(Target->GetActorLocation());
+	PathFindingNode* goalNode;
 
-	//UE_LOG(LogTemp, Warning, TEXT("Start Node [%d, %d]"), startNode->arrayX, startNode->arrayY);
-	//UE_LOG(LogTemp, Warning, TEXT("Goal Node [%d, %d]"), goalNode->arrayX, goalNode->arrayY);
-
+	// picking what goal the ai is going to head for depending on the Ai's state
+	if (isPatroling == false && isFleeing == false) {
+		goalNode = MyGrid->WorldToNode(Target->GetActorLocation());
+	}
+	else if(isPatroling == true && atPointOne == false) {
+		goalNode = MyGrid->WorldToNode(PartolPoint1->GetActorLocation());
+		
+	}
+	else if (isFleeing == true) {
+		goalNode = MyGrid->WorldToNode(FleePoint->GetActorLocation());
+	}
+	else  {
+		goalNode = MyGrid->WorldToNode(PartolPoint2->GetActorLocation());
+	
+	}
+	
 	openList.Empty();
 	closeList.Empty();
 
@@ -81,8 +129,31 @@ void APathFinding::AStarPathFinding(){
 		openList.Remove(currentNode);
 		closeList.Add(currentNode);
 
+		//check to see if the goal the Ai is at is the goal
 		if (currentNode == goalNode) {
-		//	UE_LOG(LogTemp, Warning, TEXT("Found out Node [%d, %d]"), currentNode->arrayX, currentNode->arrayY);
+		
+			//if ai is at patrol point one
+			if (atPointOne == false) {
+				if (startNode == MyGrid->WorldToNode(PartolPoint1->GetActorLocation())){
+					atPointOne = true;
+				}
+			}
+
+			//if ai is at patrol point two
+			if (atPointOne == true) {
+				if (startNode == MyGrid->WorldToNode(PartolPoint2->GetActorLocation())){
+					atPointOne = false;
+				}
+			}
+
+			//if ai has made it away from the player
+			if (startNode == MyGrid->WorldToNode(FleePoint->GetActorLocation())) {
+				isFleeing = false;
+			}
+
+
+
+
 			FinishFinding(startNode, goalNode);
 
 			for (auto& PathFindingNode : FinalNodeList) {
@@ -118,19 +189,20 @@ void APathFinding::FinishFinding(PathFindingNode* startNode, PathFindingNode* go
 
 	TArray<PathFindingNode*> tempPath;
 
-	PathFindingNode* indicator = goalNode;
+	PathFindingNode *indicator = goalNode;
 
 	while (indicator != startNode) {
 
 		tempPath.Add(indicator);
 
 		indicator = indicator->ParentNode;
-
+		
 	}
+
 	Algo::Reverse(tempPath);
 
 		FinalNodeList = tempPath;
-	
+		
 }
 
 int APathFinding::ManhattanDistance(const PathFindingNode& current, const PathFindingNode& neighbour)

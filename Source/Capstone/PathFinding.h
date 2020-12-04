@@ -26,7 +26,21 @@ public:
 	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* EnemyMesh;
 	UPROPERTY(EditAnywhere) AGrid* MyGrid = nullptr;
 	UPROPERTY(EditAnywhere) AActor* Target = nullptr;
+	UPROPERTY(EditAnywhere) AActor* PartolPoint1= nullptr;
+	UPROPERTY(EditAnywhere) AActor* PartolPoint2 = nullptr;
+	UPROPERTY(EditAnywhere) AActor* FleePoint = nullptr;
 
+	UPROPERTY(EditAnywhere) TSubclassOf<AActor> temp;
+
+	UPROPERTY(EditAnywhere) bool isRange;
+
+	void Patrol();
+	void Chase();
+	void Attack();
+	
+	void flee();
+	bool isFleeing;
+	float speed = 6.0f;
 private:
 	TArray<PathFindingNode*> openList;
 	TArray<PathFindingNode*> closeList;
@@ -36,5 +50,9 @@ private:
 	void FinishFinding(PathFindingNode* startNode, PathFindingNode* goalNode);
 
 	int ManhattanDistance(const PathFindingNode& current, const PathFindingNode& neighbour);
-
+	bool isPatroling;
+	bool atPointOne;
+	bool atSafeSpot;
+	
+	int t = 50;
 };
