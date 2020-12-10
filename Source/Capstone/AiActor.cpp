@@ -15,9 +15,8 @@ AAiActor::AAiActor()
 	Collider->SetSphereRadius(20.f, false);
 	Collider->SetGenerateOverlapEvents(true);
 	Collider->SetupAttachment(GetRootComponent());
+	
 
-	Collider->OnComponentBeginOverlap.AddDynamic(this, &AAiActor::BeginOverlap);
-	Collider->OnComponentEndOverlap.AddDynamic(this, &AAiActor::EndOverlap);
 
 	playerDetected = false;
 }
@@ -26,7 +25,8 @@ AAiActor::AAiActor()
 void AAiActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	Collider->OnComponentBeginOverlap.AddDynamic(this, &AAiActor::BeginOverlap);
+	Collider->OnComponentEndOverlap.AddDynamic(this, &AAiActor::EndOverlap);
 }
 
 //void AAiActor::GetlifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
@@ -42,46 +42,44 @@ void AAiActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//targetVector = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
-	////targetVecRep = targetVector;
-	//thisVector = this->GetActorLocation();
-	//
-	//if (isRanged == true) {
-	//	RangeFollow(targetVector, thisVector, maxSpeed, DeltaTime);
-	//}
-	//else
-	//{
-	//	MeleeFollow(targetVector, thisVector, maxSpeed, DeltaTime);
-	//}
+	if (targetPlayer != nullptr) {
+		targetVector = targetPlayer->GetActorLocation();
+	}
+
+	//targetVecRep = targetVector;
+	thisVector = this->GetActorLocation();
+
 	
-	if (playerDetected == true) {
 		if (isRanged == true) {
-			RangeFollow(targetVector, thisVector, maxSpeed, DeltaTime);
+			RangeFollow(targetVector, thisVector, maxSpeed, DeltaTime, playerDetected);
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("tagV %f %f %f"), targetVector.X, targetVector.Y, targetVector.Z));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("tagV %f %f %f"), targetVector.X, targetVector.Y, targetVector.Z));
 
-			MeleeFollow(targetVector, thisVector, maxSpeed, DeltaTime);
+			MeleeFollow(targetVector, thisVector, maxSpeed, DeltaTime, playerDetected);
 		}
-	}
 }
 
-void AAiActor::MeleeFollow(FVector targetVector_, FVector thisVector_, float maxSpeed_, float DeltaTime) {
+void AAiActor::MeleeFollow_Implementation(FVector targetVector_, FVector thisVector_, float maxSpeed_, float DeltaTime, bool playerDetected_) {
 
-	if ((thisVector_ - targetVector_).Size() > 200.0f) {
-		//to allow the NPC to follow player's position using seek
-		FVector resultPos = thisVector_;
+	if (playerDetected_ == true) {
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Entering follow function")));
 
-		FVector velocity = targetVector_ - thisVector_;
+		if ((thisVector_ - targetVector_).Size() > 200.0f) {
+			//to allow the NPC to follow player's position using seek
+			FVector resultPos = thisVector_;
 
-		velocity.Normalize();
-		velocity *= maxSpeed_;
+			FVector velocity = targetVector_ - thisVector_;
 
-		resultPos.X += (velocity.X * DeltaTime);
-		resultPos.Y += (velocity.Y * DeltaTime);
+			velocity.Normalize();
+			velocity *= maxSpeed_;
 
-		SetActorLocation(resultPos, true);
-	}
+			resultPos.X += (velocity.X * DeltaTime);
+			resultPos.Y += (velocity.Y * DeltaTime);
+
+			SetActorLocation(resultPos, true);
+		}
 
 		//make actor look at player
 
@@ -99,89 +97,98 @@ void AAiActor::MeleeFollow(FVector targetVector_, FVector thisVector_, float max
 		resultRot.Pitch = 0;
 		resultRot.Roll = 0;
 		SetActorRotation(resultRot, ETeleportType::None);
-	
+
 		if ((thisVector_ - targetVector_).Size() <= 200.0f) {
 			//insert attack 
 				//MeleeAttack();
 			//pause seeking for duration of attack before resuming
 
 		}
+	}
 }
 
-void AAiActor::RangeFollow(FVector targetVector_, FVector thisVector_, float maxSpeed_, float DeltaTime) {
+void AAiActor::RangeFollow_Implementation(FVector targetVector_, FVector thisVector_, float maxSpeed_, float DeltaTime, bool playerDetected_) {
 
-	float temp = (thisVector_ - targetVector_).Size();
+	if (playerDetected_ == true) {
+		float temp = (thisVector_ - targetVector_).Size();
 
-	if (temp < 400.0f) {
-		FVector resultPos = thisVector_;
+		if (temp < 300.0f) {
+			FVector resultPos = thisVector_;
 
-		FVector velocity = targetVector_ - thisVector_;
+			FVector velocity = targetVector_ - thisVector_;
 
-		velocity.Normalize();
-		velocity *= maxSpeed_;
+			velocity.Normalize();
+			velocity *= maxSpeed_;
 
-		resultPos.X -= (velocity.X * DeltaTime);
-		resultPos.Y -= (velocity.Y * DeltaTime);
+			resultPos.X -= (velocity.X * DeltaTime);
+			resultPos.Y -= (velocity.Y * DeltaTime);
 
-		SetActorLocation(resultPos, true);
+			SetActorLocation(resultPos, true);
+		}
+
+		if (temp > 500.0f) {
+			FVector resultPos = thisVector_;
+
+			FVector velocity = targetVector_ - thisVector_;
+
+			velocity.Normalize();
+			velocity *= maxSpeed_;
+
+			resultPos.X += (velocity.X * DeltaTime);
+			resultPos.Y += (velocity.Y * DeltaTime);
+
+			SetActorLocation(resultPos, true);
+		}
+
+		if (temp <600.0f && temp >400.0f) {
+			//insert attack
+
+			//pause seeking and fleeing for duration of attack
+			//can use SetTimer to delay functions
+		}
+
+
+		//make actor look at player
+
+	//FRotator resultAngle;
+	//resultAngle = this->GetActorRotation();
+
+	//if (velocity.Size() > 0) {
+	//	resultAngle.Yaw += (atan2(-velocity.X, velocity.Z) * DeltaTime);
+	//	SetActorRotation(resultAngle, ETeleportType::None);
+	//}
+
+		FRotator resultRot;
+		resultRot = UKismetMathLibrary::FindLookAtRotation(thisVector_, targetVector_);
+		resultRot.Pitch = 0;
+		resultRot.Roll = 0;
+		SetActorRotation(resultRot, ETeleportType::None);
+
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Distance: %f"), temp));
 	}
 
-	if (temp > 600.0f) {
-		FVector resultPos = thisVector_;
-
-		FVector velocity = targetVector_ - thisVector_;
-
-		velocity.Normalize();
-		velocity *= maxSpeed_;
-
-		resultPos.X += (velocity.X * DeltaTime);
-		resultPos.Y += (velocity.Y * DeltaTime);
-
-		SetActorLocation(resultPos, true);
-	}
-
-	if (temp <600.0f && temp >400.0f) {
-		//insert attack
-	
-		//pause seeking and fleeing for duration of attack
-		//can use SetTimer to delay functions
-	}
-
-
-	//make actor look at player
-
-//FRotator resultAngle;
-//resultAngle = this->GetActorRotation();
-
-//if (velocity.Size() > 0) {
-//	resultAngle.Yaw += (atan2(-velocity.X, velocity.Z) * DeltaTime);
-//	SetActorRotation(resultAngle, ETeleportType::None);
-//}
-
-	FRotator resultRot;
-	resultRot = UKismetMathLibrary::FindLookAtRotation(thisVector_, targetVector_);
-	resultRot.Pitch = 0;
-	resultRot.Roll = 0;
-	SetActorRotation(resultRot, ETeleportType::None);
-
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Distance: %f"), temp));
 }
 
 void AAiActor::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ACharacter* const Character = Cast<ACharacter>(OtherActor);
 	UCapsuleComponent* const Component = Cast<UCapsuleComponent>(OtherComp);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("PLAYER DETECTED")));
-
-	targetVector = Character->GetActorLocation();
-	//targetVecRep = targetVector;
-	thisVector = this->GetActorLocation();
+//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("PLAYER DETECTED")));
+	if (Character != nullptr) {
+		targetPlayer = Character;
+	}
+	////targetVecRep = targetVector;
+	//thisVector = this->GetActorLocation();
 	playerDetected = true;
 }
 
 void AAiActor::EndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("PLAYER NOT DETECTED")));
+	ACharacter* const Character = Cast<ACharacter>(OtherActor);
+	UCapsuleComponent* const Component = Cast<UCapsuleComponent>(OtherComp);
 
+	if (OtherActor && (OtherActor != this) && OtherComp) {
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("PLAYER NOT DETECTED")));
+}
 	playerDetected = false;
 }

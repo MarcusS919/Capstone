@@ -21,6 +21,7 @@ APowerUp::APowerUp()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PowerUpMesh"));
 	Mesh->SetupAttachment(Root);
 
+	changeValue = 20;
 }
 
 // Called when the game starts or when spawned

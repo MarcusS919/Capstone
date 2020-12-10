@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/TextRenderComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "CapstoneCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -19,8 +22,9 @@ class ACapstoneCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
+	
 public:
-	ACapstoneCharacter();
+	ACapstoneCharacter(const FObjectInitializer& ObjectInitializer);
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -32,7 +36,27 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Temp)
 		TSubclassOf<AActor> temp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerInfo)
+		float maxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerInfo)
+		float health;
+
+	//UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = PlayerInfo)
+	//	float maxHealth;
+
+	//UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = PlayerInfo)
+	//	float health;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerInfo)
+		UTextRenderComponent*  healthText;*/
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Temp)
+		class UWidgetComponent* healthDisplay;
+
 protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 	/** Resets HMD orientation in VR. */
 	void OnResetVR();
@@ -64,7 +88,13 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void TestFunc();
 
+	UFUNCTION(Server, Reliable)
+		void Interact();
+
 protected:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
@@ -74,5 +104,14 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UFUNCTION(BlueprintCallable, Category = "CollisionEvents")
+		void BeginOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+	
+	float GetHealth() const { return health; }
+		void SetHealth(float val_) { health = val_; }
+
+	float GetMaxHealth() const { return maxHealth; }
+		void SetMaxHealth(float val_) { maxHealth = val_; }
 };
 

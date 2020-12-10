@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "CapstoneCharacter.h"
 #include "GameFramework/Character.h"
 #include "PowerUp.generated.h"
 
@@ -34,6 +35,8 @@ class CAPSTONE_API APowerUp : public AActor
 	UPROPERTY(EditAnywhere, Category = Powerup)
 		float RollValue;
 
+	UPROPERTY(EditAnywhere, Category = Powerup)
+		float changeValue;
 
 public:
 	// Sets default values for this actor's properties

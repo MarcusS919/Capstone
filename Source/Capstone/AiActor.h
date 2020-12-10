@@ -41,6 +41,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Info")
 		bool playerDetected;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Info")
+		ACharacter* targetPlayer;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -50,9 +53,11 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void MeleeFollow(FVector targetVector_, FVector thisVector_,float maxSpeed_, float DeltaTime);
+	UFUNCTION(Server, Reliable)
+	void MeleeFollow(FVector targetVector_, FVector thisVector_,float maxSpeed_, float DeltaTime, bool playerDetected_);
 
-	void RangeFollow(FVector targetVector_, FVector thisVector_, float maxSpeed_, float DeltaTime);
+	UFUNCTION(Server, Reliable)
+	void RangeFollow(FVector targetVector_, FVector thisVector_, float maxSpeed_, float DeltaTime, bool playerDetected_);
 
 	//void GetlifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 

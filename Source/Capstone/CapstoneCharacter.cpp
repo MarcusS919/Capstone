@@ -7,13 +7,15 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "HealthBar.h"
 #include "GameFramework/SpringArmComponent.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ACapstoneCharacter
 
-ACapstoneCharacter::ACapstoneCharacter()
+ACapstoneCharacter::ACapstoneCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	//bReplicates = true;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -45,8 +47,24 @@ ACapstoneCharacter::ACapstoneCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	maxHealth = 100.0f;
+	health = maxHealth;
+	
+	healthDisplay = ObjectInitializer.CreateDefaultSubobject<UWidgetComponent>(this, TEXT("HealthBar"));
+	healthDisplay->SetupAttachment(GetCapsuleComponent());
+	/*healthText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("HealthText"));
+	healthText->SetText(FText::FromString(FString::SanitizeFloat(health)));
+	healthText->SetRelativeLocation(FVector(0.0f,0.0f,80.0f));*/
+	//healthText->SetupAttachment(GetCapsuleComponent());
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ACapstoneCharacter::BeginOverlap);
 }
 
+//void ACapstoneCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const {
+//	DOREPLIFETIME(ACapstoneCharacter, health);
+//	DOREPLIFETIME(ACapstoneCharacter, maxHealth);
+//	
+//}
 //////////////////////////////////////////////////////////////////////////
 // Input
 
@@ -76,6 +94,8 @@ void ACapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACapstoneCharacter::OnResetVR);
 
 	PlayerInputComponent->BindAction("TestAction", IE_Pressed, this, &ACapstoneCharacter::TestFunc);
+
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACapstoneCharacter::Interact);
 }
 
 
@@ -139,5 +159,43 @@ void ACapstoneCharacter::TestFunc_Implementation() {
 	if (Controller != NULL)
 	{
 		AActor* spawnActor = GetWorld()->SpawnActor<AActor>(temp, this->GetActorLocation(), this->GetActorRotation());
+	}
+}
+
+void ACapstoneCharacter::Interact_Implementation() {
+	if (Controller != NULL)
+	{
+		
+	}
+}
+
+// Called when the game starts or when spawned
+void ACapstoneCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	UHealthBar* HealthBar = Cast<UHealthBar>(healthDisplay->GetUserWidgetObject());
+	HealthBar->SetOwner(this);
+	
+	//healthText->SetText(FText::FromString(FString::SanitizeFloat(health)));
+}
+
+
+
+// Called every frame
+void ACapstoneCharacter::Tick(float DeltaTime)
+{
+	
+}
+
+void ACapstoneCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	ACharacter* const Character = Cast<ACharacter>(OtherActor);
+	UCapsuleComponent* const Component = Cast<UCapsuleComponent>(OtherComp);
+	
+	if (OtherActor->ActorHasTag("PowerUp")) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("PICKED UP POWERUP")));
+		float temp = 20.0f;
+		/*UpdateHealth(temp);*/
+		health -= 20.0f;
 	}
 }
