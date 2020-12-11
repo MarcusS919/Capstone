@@ -15,7 +15,7 @@
 
 ACapstoneCharacter::ACapstoneCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	//bReplicates = true;
+	bReplicates = true;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -175,8 +175,7 @@ void ACapstoneCharacter::BeginPlay()
 	Super::BeginPlay();
 	UHealthBar* HealthBar = Cast<UHealthBar>(healthDisplay->GetUserWidgetObject());
 	HealthBar->SetOwner(this);
-	
-	//healthText->SetText(FText::FromString(FString::SanitizeFloat(health)));
+
 }
 
 
@@ -194,8 +193,6 @@ void ACapstoneCharacter::BeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 	
 	if (OtherActor->ActorHasTag("PowerUp")) {
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("PICKED UP POWERUP")));
-		float temp = 20.0f;
-		/*UpdateHealth(temp);*/
 		health -= 20.0f;
 	}
 }

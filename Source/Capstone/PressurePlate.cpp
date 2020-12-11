@@ -8,6 +8,8 @@ APressurePlate::APressurePlate()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
+
 	root = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	RootComponent = root;
 	
@@ -39,7 +41,7 @@ void APressurePlate::BeginOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("pressure plate overlap")));
 	if (Character != nullptr) {
 		door->OpenDoor();
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("pressure plate overlap")));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("pressure plate overlap")));
 	}
 }
 
@@ -49,6 +51,6 @@ void APressurePlate::EndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Oth
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("pressure plate end overlap")));
 	if (Character != nullptr) {
 		door->CloseDoor();
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("pressure plate end overlap")));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("pressure plate end overlap")));
 	}
 }

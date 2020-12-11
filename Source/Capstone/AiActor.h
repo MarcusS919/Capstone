@@ -20,6 +20,7 @@ public:
 	// Sets default values for this actor's properties
 	AAiActor();
 
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Info")
 		bool isRanged;
 
