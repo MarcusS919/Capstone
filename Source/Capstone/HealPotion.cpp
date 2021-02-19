@@ -48,8 +48,11 @@ void AHealPotion::InteractWithMe()
 		{
 			ACapstoneCharacter* actorClass = *Itr;
 			actorClass->UpdateHealth(20.0f);
+			actorClass = nullptr;
 		}
 	}
+	this->Destroy();
+	
 }
 
 void AHealPotion::ShowInteractionWidget()
