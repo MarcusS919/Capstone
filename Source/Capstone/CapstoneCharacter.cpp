@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -45,6 +46,17 @@ ACapstoneCharacter::ACapstoneCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	maxHealth = 100.0f;
+	health = maxHealth;
+	healthPercent = 1.0f;
+
+	maxMana = 100.0f;
+	mana = maxMana;
+	manaPercent = 1.0f;
+
+	interactionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractionBox"));
+	interactionBox->SetupAttachment(RootComponent);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -74,8 +86,102 @@ void ACapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACapstoneCharacter::OnResetVR);
+
+	//Player Action
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACapstoneCharacter::Attack);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACapstoneCharacter::Interact);
 }
 
+void ACapstoneCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	interactionBox->OnComponentBeginOverlap.AddDynamic(this, &ACapstoneCharacter::InteractonBoxBeginOverlap);
+	interactionBox->OnComponentEndOverlap.AddDynamic(this, &ACapstoneCharacter::InteractonBoxEndOverlap);
+}
+
+void ACapstoneCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+}
+
+float ACapstoneCharacter::GetHealth()
+{
+	return healthPercent;
+}
+
+float ACapstoneCharacter::GetMana()
+{
+	return manaPercent;
+}
+
+FText ACapstoneCharacter::GetHealthText()
+{
+	int hp = FMath::RoundHalfFromZero(healthPercent * 100);
+	FString hpString = FString::FromInt(hp);
+	hpString += FString(TEXT("%"));
+	FText hpText = FText::FromString(hpString);
+	return hpText;
+}
+
+FText ACapstoneCharacter::GetManaText()
+{
+	int manaInt = FMath::RoundHalfFromZero(manaPercent * 100);
+	FString manaString = FString::FromInt(manaInt);
+	manaString += FString(TEXT("%"));
+	FText manaText = FText::FromString(manaString);
+	return manaText;
+}
+
+void ACapstoneCharacter::UpdateMana(float manaChange_)
+{
+	mana = FMath::Clamp(mana += manaChange_, 0.0f, maxMana);
+	manaPercent = mana / maxMana;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("mana: %f"), manaPercent));
+}
+
+void ACapstoneCharacter::UpdateHealth(float healthChange_)
+{
+	health = FMath::Clamp(health += healthChange_, 0.0f, maxHealth);
+	healthPercent = health / maxHealth;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("health: %f"), healthPercent));
+}
+
+void ACapstoneCharacter::Attack()
+{
+	if (Controller != NULL)
+	{
+		if (manaPercent >= 0.2f) {
+			float manaChange = -20.0f;
+			UpdateMana(manaChange);
+			AActor* spawnActor = GetWorld()->SpawnActor<AActor>(attackObj, this->GetActorLocation(), this->GetActorRotation());
+		}
+		else {
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Not enough mana")));
+		}
+	}
+}
+
+void ACapstoneCharacter::Interact() {
+	if (interface) {
+		interface->InteractWithMe();
+	}
+}
+
+void ACapstoneCharacter::InteractonBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	interface = Cast<IInteractionInterface>(OtherActor);
+	if (interface) {
+		interface->ShowInteractionWidget();
+	}
+}
+
+void ACapstoneCharacter::InteractonBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (interface) {
+		interface->HideInteractionWidget();
+		interface = nullptr;
+	}
+}
 
 void ACapstoneCharacter::OnResetVR()
 {

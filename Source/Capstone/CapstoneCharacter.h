@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/BoxComponent.h"
+#include "InteractionInterface.h"
 #include "CapstoneCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -29,6 +31,29 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
+		float maxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
+		float health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
+		float healthPercent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
+		float maxMana;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
+		float mana;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
+		float manaPercent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
+		TSubclassOf<AActor> attackObj;
+
+	UPROPERTY(EditAnywhere)
+		UBoxComponent* interactionBox;
 protected:
 
 	/** Resets HMD orientation in VR. */
@@ -62,11 +87,46 @@ protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
+	virtual void BeginPlay() override;
 
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	UFUNCTION(BlueprintPure, Category = "Health")
+		float GetHealth();
+
+	UFUNCTION(BlueprintPure, Category = "Mana")
+		float GetMana();
+
+	UFUNCTION(BlueprintPure, Category = "Health")
+		FText GetHealthText();
+
+	UFUNCTION(BlueprintPure, Category = "Mana")
+		FText GetManaText();
+
+	UFUNCTION()
+		void UpdateMana(float manaChange_);
+
+	UFUNCTION()
+		void UpdateHealth(float healthChange_);
+
+	UFUNCTION()
+		void Attack();
+
+	UFUNCTION()
+		void Interact();
+
+	UFUNCTION(BlueprintCallable, Category = "CollisionEvents")
+		void InteractonBoxBeginOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable, Category = "CollisionEvents")
+		void InteractonBoxEndOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	IInteractionInterface* interface = nullptr;
 };
 
