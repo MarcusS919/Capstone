@@ -33,6 +33,10 @@ public:
 	UPROPERTY(EditAnywhere) TSubclassOf<AActor> temp;
 
 	UPROPERTY(EditAnywhere) bool isRange;
+	UPROPERTY(EditAnywhere) float maxHealth;
+	UPROPERTY(EditAnywhere) float health;
+	UPROPERTY(EditAnywhere) float healthPercent;
+	
 
 	void Patrol();
 	void Chase();
@@ -41,6 +45,8 @@ public:
 	void flee();
 	bool isFleeing;
 	float speed = 6.0f;
+	UFUNCTION()
+		void UpdateHealth(float healthChange_);
 private:
 	TArray<PathFindingNode*> openList;
 	TArray<PathFindingNode*> closeList;

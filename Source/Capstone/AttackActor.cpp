@@ -1,13 +1,15 @@
+
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "PathFinding.h"
 #include "AttackActor.h"
 
 // Sets default values
 AAttackActor::AAttackActor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
 
 }
 
@@ -15,7 +17,9 @@ AAttackActor::AAttackActor()
 void AAttackActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	OnActorBeginOverlap.AddDynamic(this, &AAttackActor::OnOverlap);
+
+
 }
 
 // Called every frame
@@ -25,5 +29,20 @@ void AAttackActor::Tick(float DeltaTime)
 	ActorLocation = GetActorLocation();
 	ActorLocation.X += 10.0f;
 	SetActorLocation(ActorLocation, true);
+
 }
 
+void AAttackActor::OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor)
+{
+	if (OtherActor != nullptr && OtherActor != this)
+	{
+		
+		
+		class APathFinding* MyCharacter = Cast<APathFinding>(OtherActor);
+		if (MyCharacter)
+		{
+			MyCharacter->UpdateHealth(-50.0f);
+			Destroy();
+		}
+	}
+}
