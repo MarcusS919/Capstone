@@ -54,7 +54,7 @@ void AObstacleMesh::OnOverlapBegin(
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("checking for walls: %f")));
+	
 	
 	if (OtherActor && (OtherActor != this)) {
 		FVector hitPosition = OtherActor->GetActorLocation();
@@ -70,7 +70,7 @@ void AObstacleMesh::OnOverlapBegin(
 void AObstacleMesh::OnOverLapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 otherBodyIndex){
 
 	if (OtherActor && (OtherActor != this)) {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("checking for walls: %f")));
+		
 	}
 }
 
