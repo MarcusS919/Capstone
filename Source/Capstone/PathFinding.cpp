@@ -20,6 +20,16 @@ void APathFinding::BeginPlay()
 	if (Target != nullptr) {
 		//UE_LOG(LogTemp, Log, TEXT("Start Path Finding : %s"), *Target->GetName());
 	}
+	if (isRange == true) {
+		maxHealth = 100.0f;
+		health = maxHealth;
+		healthPercent = 1.0f;
+	}
+	else {
+		maxHealth = 150.0f;
+		health = maxHealth;
+		healthPercent = 1.0f;
+	}
 }
 
 // Called every frame
@@ -88,6 +98,16 @@ void APathFinding::flee(){
 	isFleeing = true;
 	speed = 15.0f;
 	AStarPathFinding();
+}
+//updaating the health when the enemy is hit
+void APathFinding::UpdateHealth(float healthChange_)
+{
+	health = FMath::Clamp(health += healthChange_, 0.0f, maxHealth);
+	healthPercent = health / maxHealth;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("health: %f"), healthPercent));
+	if (health <= 0.0f){
+		Destroy();
+	}
 }
 
 void APathFinding::AStarPathFinding(){
