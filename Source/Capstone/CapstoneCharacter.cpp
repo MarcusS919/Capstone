@@ -54,6 +54,7 @@ ACapstoneCharacter::ACapstoneCharacter()
 	maxMana = 100.0f;
 	mana = maxMana;
 	manaPercent = 1.0f;
+	questStage = 0.0f;
 
 	interactionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractionBox"));
 	interactionBox->SetupAttachment(RootComponent);
@@ -95,13 +96,41 @@ void ACapstoneCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 void ACapstoneCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	interactionBox->OnComponentBeginOverlap.AddDynamic(this, &ACapstoneCharacter::InteractonBoxBeginOverlap);
-	interactionBox->OnComponentEndOverlap.AddDynamic(this, &ACapstoneCharacter::InteractonBoxEndOverlap);
+	//interactionBox->OnComponentBeginOverlap.AddDynamic(this, &ACapstoneCharacter::InteractonBoxBeginOverlap);
+	//interactionBox->OnComponentEndOverlap.AddDynamic(this, &ACapstoneCharacter::InteractonBoxEndOverlap);
+
 }
 
 void ACapstoneCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+	TArray<AActor*>overlappingActors;
+	interactionBox->GetOverlappingActors(overlappingActors);
+
+	if (overlappingActors.Num() == 0) {
+		if (interface) {
+			interface->HideInteractionWidget();
+			interface = nullptr;
+		}
+		return;
+	}
+	AActor* closestActor = overlappingActors[0];
+
+	for (auto currentActor : overlappingActors) {
+		if (GetDistanceTo(currentActor) < GetDistanceTo(closestActor)) {
+			closestActor = currentActor;
+		}
+	}
+
+	if (interface) {
+		interface->HideInteractionWidget();
+	}
+
+	interface = Cast<IInteractionInterface>(closestActor);
+
+	if (interface) {
+		interface->ShowInteractionWidget();
+	}
 }
 
 float ACapstoneCharacter::GetHealth()
@@ -146,12 +175,23 @@ void ACapstoneCharacter::UpdateHealth(float healthChange_)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("health: %f"), healthPercent));
 }
 
+float ACapstoneCharacter::GetQuestUIStage()
+{
+	return questStage;
+}
+
+void ACapstoneCharacter::UpdateQUestUI(float questStage_)
+{
+	questStage += questStage_;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("quest changed")));
+}
+
 void ACapstoneCharacter::Attack()
 {
 	if (Controller != NULL)
 	{
-		if (manaPercent >= 0.2f) {
-			float manaChange = -20.0f;
+		if (manaPercent > 0.0f) {
+			float manaChange = -5.0f;
 			UpdateMana(manaChange);
 			AActor* spawnActor = GetWorld()->SpawnActor<AActor>(attackObj, this->GetActorLocation(), this->GetActorRotation());
 		}
@@ -167,21 +207,21 @@ void ACapstoneCharacter::Interact() {
 	}
 }
 
-void ACapstoneCharacter::InteractonBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	interface = Cast<IInteractionInterface>(OtherActor);
-	if (interface) {
-		interface->ShowInteractionWidget();
-	}
-}
-
-void ACapstoneCharacter::InteractonBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if (interface) {
-		interface->HideInteractionWidget();
-		interface = nullptr;
-	}
-}
+//void ACapstoneCharacter::InteractonBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{
+//	interface = Cast<IInteractionInterface>(OtherActor);
+//	if (interface) {
+//		interface->ShowInteractionWidget();
+//	}
+//}
+//
+//void ACapstoneCharacter::InteractonBoxEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+//{
+//	if (interface) {
+//		interface->HideInteractionWidget();
+//		interface = nullptr;
+//	}
+//}
 
 void ACapstoneCharacter::OnResetVR()
 {

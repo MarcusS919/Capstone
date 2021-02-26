@@ -54,6 +54,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* interactionBox;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
+		float questStage;
 protected:
 
 	/** Resets HMD orientation in VR. */
@@ -121,11 +124,17 @@ public:
 	UFUNCTION()
 		void Interact();
 
-	UFUNCTION(BlueprintCallable, Category = "CollisionEvents")
-		void InteractonBoxBeginOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		void UpdateQUestUI(float questStage_);
 
-	UFUNCTION(BlueprintCallable, Category = "CollisionEvents")
-		void InteractonBoxEndOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UFUNCTION()
+		float GetQuestUIStage();
+
+	//UFUNCTION(BlueprintCallable, Category = "CollisionEvents")
+	//	void InteractonBoxBeginOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	//UFUNCTION(BlueprintCallable, Category = "CollisionEvents")
+	//	void InteractonBoxEndOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	IInteractionInterface* interface = nullptr;
 };
