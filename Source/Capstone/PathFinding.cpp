@@ -45,7 +45,7 @@ void APathFinding::Tick(float DeltaTime)
 		if (FinalNodeList.Num() > 0) {
 
 			//where the Ai wants to go
-			FVector destPos = FinalNodeList[0]->Position;
+			destPos = FinalNodeList[0]->Position;
 
 			//where the Ai is at
 			FVector currentPos = GetActorLocation();
@@ -82,7 +82,7 @@ void APathFinding::Chase(){
 }
 
 void APathFinding::Attack(){
-	if (isRange == true) {
+	if (isRange == true && health >= 0) {
 		if (t == 0) {
 			AActor* spawnActor = GetWorld()->SpawnActor<AActor>(temp, this->GetActorLocation(), this->GetActorRotation());
 			t += 50;

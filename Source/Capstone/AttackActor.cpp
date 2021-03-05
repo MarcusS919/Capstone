@@ -2,6 +2,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PathFinding.h"
+#include "Engine/Engine.h"
 #include "AttackActor.h"
 
 // Sets default values
@@ -18,7 +19,7 @@ void AAttackActor::BeginPlay()
 {
 	Super::BeginPlay();
 	OnActorBeginOverlap.AddDynamic(this, &AAttackActor::OnOverlap);
-
+	
 
 }
 
@@ -26,9 +27,19 @@ void AAttackActor::BeginPlay()
 void AAttackActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+
 	ActorLocation = GetActorLocation();
 	ActorLocation.X += 10.0f;
 	SetActorLocation(ActorLocation, true);
+	if (t == 0) {
+		Destroy();
+		
+	}
+	else {
+		t = t - 1;
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("me: %f"), t));
+	}
 
 }
 
@@ -46,3 +57,5 @@ void AAttackActor::OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor)
 		}
 	}
 }
+
+
