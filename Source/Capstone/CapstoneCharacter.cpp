@@ -56,7 +56,7 @@ ACapstoneCharacter::ACapstoneCharacter()
 	manaPercent = 1.0f;
 	questStage = 0.0f;
 	killCount = 0.0f;
-	maxKillCount = 1.0f;
+	maxKillCount = 2.0f;
 
 	projectileSpeed = 1000.0f;
 
@@ -197,6 +197,7 @@ void ACapstoneCharacter::UpdateKills(float killCount_)
 
 	if (killCount == maxKillCount && questStage == 1.0f) {
 		UpdateQuestUI(1.0f);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("quest: %f"), questStage));
 	}
 }
 
