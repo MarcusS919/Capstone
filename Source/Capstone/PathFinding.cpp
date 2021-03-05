@@ -2,6 +2,8 @@
 
 
 #include "PathFinding.h"
+#include "CapstoneCharacter.h"
+#include "UObject/UObjectIterator.h"
 #include "Engine/Engine.h"
 // Sets default values
 APathFinding::APathFinding()
@@ -106,6 +108,15 @@ void APathFinding::UpdateHealth(float healthChange_)
 	healthPercent = health / maxHealth;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("health: %f"), healthPercent));
 	if (health <= 0.0f){
+		for (TObjectIterator<ACapstoneCharacter> Itr; Itr; ++Itr)
+		{
+			if (Itr->IsA(ACapstoneCharacter::StaticClass()))
+			{
+				ACapstoneCharacter* actorClass = *Itr;
+				actorClass->UpdateKills(1.0f);
+				actorClass = nullptr;
+			}
+		}
 		Destroy();
 	}
 }

@@ -43,7 +43,7 @@ void AWizardNPC::Tick(float DeltaTime)
 
 void AWizardNPC::InteractWithMe()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Interacted with heal potion")));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Interacted with wizard")));
 
 	//UDialogueUserWidget* dialogue = CreateWidget<UDialogueUserWidget>(GetGameInstance(), UDialogueUserWidget::StaticClass());
 	//if (dialogue) {
@@ -58,7 +58,7 @@ void AWizardNPC::InteractWithMe()
 			if (actorClass->GetQuestUIStage() == 0.0f) {
 				dialogueWIdget->SetVisibility(true);
 				GetWorld()->GetTimerManager().SetTimer(waitTimerHandle, this, &AWizardNPC::HideDialogue, waitTime, false);
-				actorClass->UpdateQUestUI(1.0f);
+				actorClass->UpdateQuestUI(1.0f);
 			}
 
 			if (actorClass->GetQuestUIStage() == 1.0f) {

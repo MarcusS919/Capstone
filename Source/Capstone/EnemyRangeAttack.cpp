@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "EnemyRangeAttack.h"
 #include "CapstoneCharacter.h"
 #include "PathFinding.h"
 #include "Engine/Engine.h"
-#include "EnemyRangeAttack.h"
+
 
 // Sets default values
 AEnemyRangeAttack::AEnemyRangeAttack()

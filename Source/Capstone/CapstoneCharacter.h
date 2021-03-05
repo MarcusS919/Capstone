@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Components/BoxComponent.h"
 #include "InteractionInterface.h"
+#include "AttackActor.h"
 #include "CapstoneCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -50,13 +51,22 @@ public:
 		float manaPercent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
-		TSubclassOf<AActor> attackObj;
+		float projectileSpeed;
 
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* interactionBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
 		float questStage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
+		float killCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
+		float maxKillCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerInfo")
+		TSubclassOf<AAttackActor> ProjectileOBJ;
 protected:
 
 	/** Resets HMD orientation in VR. */
@@ -125,10 +135,19 @@ public:
 		void Interact();
 
 	UFUNCTION()
-		void UpdateQUestUI(float questStage_);
+		void UpdateQuestUI(float questStage_);
 
 	UFUNCTION()
 		float GetQuestUIStage();
+
+	UFUNCTION()
+		void UpdateKills(float killCount_);
+
+	UFUNCTION()
+		float GetKills();
+
+	UFUNCTION()
+		float GetMaxKills();
 
 	//UFUNCTION(BlueprintCallable, Category = "CollisionEvents")
 	//	void InteractonBoxBeginOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

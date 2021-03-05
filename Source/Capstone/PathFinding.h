@@ -36,7 +36,9 @@ public:
 	UPROPERTY(EditAnywhere) float maxHealth;
 	UPROPERTY(EditAnywhere) float health;
 	UPROPERTY(EditAnywhere) float healthPercent;
+	UPROPERTY(EditAnywhere) FVector destPos;
 	
+
 
 	void Patrol();
 	void Chase();

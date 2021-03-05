@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "AttackActor.generated.h"
 
 UCLASS()
@@ -15,6 +16,7 @@ public:
 	// Sets default values for this actor's properties
 	AAttackActor();
 	FVector ActorLocation;
+	UProjectileMovementComponent* ProjectileMovement = nullptr;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -26,6 +28,7 @@ public:
 	UFUNCTION()
 		void OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor);
 
+	void ShootProjectile(float Speed);
 	float t = 500;
 };
 

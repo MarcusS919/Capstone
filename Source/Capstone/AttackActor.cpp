@@ -1,16 +1,18 @@
 
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "AttackActor.h"
+
 #include "PathFinding.h"
 #include "Engine/Engine.h"
-#include "AttackActor.h"
+
 
 // Sets default values
 AAttackActor::AAttackActor()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(FName("Projectile Movement"));
 
 }
 
@@ -19,7 +21,6 @@ void AAttackActor::BeginPlay()
 {
 	Super::BeginPlay();
 	OnActorBeginOverlap.AddDynamic(this, &AAttackActor::OnOverlap);
-	
 
 }
 
@@ -29,9 +30,9 @@ void AAttackActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 
-	ActorLocation = GetActorLocation();
-	ActorLocation.X += 10.0f;
-	SetActorLocation(ActorLocation, true);
+	//ActorLocation = GetActorLocation();
+	//ActorLocation.X += 10.0f;
+	//SetActorLocation(ActorLocation, true);
 	if (t == 0) {
 		Destroy();
 		
@@ -56,6 +57,13 @@ void AAttackActor::OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor)
 			Destroy();
 		}
 	}
+}
+
+void AAttackActor::ShootProjectile(float Speed)
+{
+	ProjectileMovement->ProjectileGravityScale = 0.0f;
+	ProjectileMovement->SetVelocityInLocalSpace(FVector::ForwardVector * Speed);
+	
 }
 
 

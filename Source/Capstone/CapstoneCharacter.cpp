@@ -55,6 +55,10 @@ ACapstoneCharacter::ACapstoneCharacter()
 	mana = maxMana;
 	manaPercent = 1.0f;
 	questStage = 0.0f;
+	killCount = 0.0f;
+	maxKillCount = 1.0f;
+
+	projectileSpeed = 1000.0f;
 
 	interactionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("InteractionBox"));
 	interactionBox->SetupAttachment(RootComponent);
@@ -180,10 +184,30 @@ float ACapstoneCharacter::GetQuestUIStage()
 	return questStage;
 }
 
-void ACapstoneCharacter::UpdateQUestUI(float questStage_)
+void ACapstoneCharacter::UpdateQuestUI(float questStage_)
 {
 	questStage += questStage_;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("quest changed")));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("quest changed||quest stage: %f"), questStage));
+}
+
+void ACapstoneCharacter::UpdateKills(float killCount_)
+{
+	killCount += killCount_;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("kills updated")));
+
+	if (killCount == maxKillCount && questStage == 1.0f) {
+		UpdateQuestUI(1.0f);
+	}
+}
+
+float ACapstoneCharacter::GetKills()
+{
+	return killCount;
+}
+
+float ACapstoneCharacter::GetMaxKills()
+{
+	return maxKillCount;
 }
 
 void ACapstoneCharacter::Attack()
@@ -193,7 +217,9 @@ void ACapstoneCharacter::Attack()
 		if (manaPercent > 0.0f) {
 			float manaChange = -5.0f;
 			UpdateMana(manaChange);
-			AActor* spawnActor = GetWorld()->SpawnActor<AActor>(attackObj, this->GetActorLocation(), this->GetActorRotation());
+			auto Projectile = GetWorld()->SpawnActor<AAttackActor>(ProjectileOBJ, this->GetActorLocation(), this->GetActorRotation());
+			// Call the LaunchProjectile function of our newly created Projectile with our tank's launch speed
+			Projectile->ShootProjectile(projectileSpeed);
 		}
 		else {
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("Not enough mana")));
