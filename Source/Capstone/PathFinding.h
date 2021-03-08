@@ -3,6 +3,8 @@
 #pragma once
 #include "Grid.h"
 #include "PathFinding.h"
+#include "CapstoneCharacter.h"
+#include "EnemyRangeAttack.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "PathFinding.generated.h"
@@ -23,19 +25,21 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	virtual void LookAtPlayer();
 	UPROPERTY(VisibleAnywhere) UStaticMeshComponent* EnemyMesh;
 	UPROPERTY(EditAnywhere) AGrid* MyGrid = nullptr;
 	UPROPERTY(EditAnywhere) AActor* Target = nullptr;
 	UPROPERTY(EditAnywhere) AActor* PartolPoint1= nullptr;
 	UPROPERTY(EditAnywhere) AActor* PartolPoint2 = nullptr;
 	UPROPERTY(EditAnywhere) AActor* FleePoint = nullptr;
-
-	UPROPERTY(EditAnywhere) TSubclassOf<AActor> temp;
+	UPROPERTY(EditAnywhere) ACapstoneCharacter* player = nullptr;
+	UPROPERTY(EditAnywhere) TSubclassOf<AEnemyRangeAttack> temp;
 
 	UPROPERTY(EditAnywhere) bool isRange;
 	UPROPERTY(EditAnywhere) float maxHealth;
 	UPROPERTY(EditAnywhere) float health;
 	UPROPERTY(EditAnywhere) float healthPercent;
+	UPROPERTY(EditAnywhere) float projectileSpeed;
 	UPROPERTY(EditAnywhere) FVector destPos;
 	
 
@@ -47,6 +51,7 @@ public:
 	void flee();
 	bool isFleeing;
 	float speed = 6.0f;
+	FQuat rot;
 	UFUNCTION()
 		void UpdateHealth(float healthChange_);
 private:

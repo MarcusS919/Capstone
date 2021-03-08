@@ -3,6 +3,7 @@
 
 #include "PathFinding.h"
 #include "CapstoneCharacter.h"
+#include "EnemyRangeAttack.h"
 #include "UObject/UObjectIterator.h"
 #include "Engine/Engine.h"
 // Sets default values
@@ -26,6 +27,7 @@ void APathFinding::BeginPlay()
 		maxHealth = 100.0f;
 		health = maxHealth;
 		healthPercent = 1.0f;
+		projectileSpeed = 1000;
 	}
 	else {
 		maxHealth = 150.0f;
@@ -55,8 +57,9 @@ void APathFinding::Tick(float DeltaTime)
 
 			
 			FVector dir = destPos - currentPos;
+			//dir.X += 10;
 			FQuat dirQuat(dir.Rotation());
-			FQuat rot = FQuat::Slerp(GetActorQuat(), dirQuat, 5 * DeltaTime);
+			 rot = FQuat::Slerp(GetActorQuat(), dirQuat, 5 * DeltaTime);
 
 			SetActorRotation(rot);
 
@@ -72,6 +75,21 @@ void APathFinding::Tick(float DeltaTime)
 	}
 }
 
+void APathFinding::LookAtPlayer()
+{
+	destPos = player->GetActorLocation();
+	FVector currentPos = GetActorLocation();
+	destPos.Z = currentPos.Z;
+
+
+	FVector dir = destPos - currentPos;
+	FQuat dirQuat(dir.Rotation());
+	rot = FQuat::Slerp(GetActorQuat(), dirQuat, 5 * 6);
+
+	SetActorRotation(rot);
+	
+}
+
 void APathFinding::Patrol(){
 	speed = 6.0f;
 	isPatroling = true;
@@ -84,9 +102,16 @@ void APathFinding::Chase(){
 }
 
 void APathFinding::Attack(){
+	speed = 0;
+	AStarPathFinding();
+	
 	if (isRange == true && health >= 0) {
 		if (t == 0) {
-			AActor* spawnActor = GetWorld()->SpawnActor<AActor>(temp, this->GetActorLocation(), this->GetActorRotation());
+			//LookAtPlayer();
+			SetActorRotation(rot);
+			auto Projectile = GetWorld()->SpawnActor<AEnemyRangeAttack>(temp, this->GetActorLocation(), this->GetActorRotation());
+			
+			Projectile->ShootProjectile(projectileSpeed);
 			t += 50;
 		}
 		else {

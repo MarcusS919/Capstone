@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "CapstoneCharacter.h"
 #include "EnemyRangeAttack.generated.h"
 
@@ -16,10 +17,7 @@ public:
 	// Sets default values for this actor's properties
 	AEnemyRangeAttack();
 	FVector ActorLocation;
-	FVector PlayerLocation;
-	FVector Direction;
-	FVector destPos;
-	FVector destPos_;
+	UProjectileMovementComponent* ProjectileMovement = nullptr;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,6 +33,7 @@ public:
 	UFUNCTION()
 		void ShootingAtPlayer(AActor* MyOverlappedActor);
 
-
+	void ShootProjectile(float Speed);
+	void DestoryObj();
 	float t = 100;
 };
