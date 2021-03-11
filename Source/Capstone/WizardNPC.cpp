@@ -68,11 +68,12 @@ void AWizardNPC::InteractWithMe()
 
 			if (actorClass->GetQuestUIStage() == 2.0f) {
 				dialogueWIdget->SetVisibility(true);
-				//actorClass->UpdateQuestUI(1.0f);
 				GetWorld()->GetTimerManager().SetTimer(waitTimerHandle, this, &AWizardNPC::HideDialogue, waitTime, false);
+				//actorClass->UpdateQuestUI(1.0f);
 			}
 			actorClass = nullptr;
 		}
+		
 	}
 	
 }
