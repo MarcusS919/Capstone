@@ -35,6 +35,9 @@ public:
 	UPROPERTY(EditAnywhere) ACapstoneCharacter* player = nullptr;
 	UPROPERTY(EditAnywhere) TSubclassOf<AEnemyRangeAttack> temp;
 
+
+
+
 	UPROPERTY(EditAnywhere) bool isRange;
 	UPROPERTY(EditAnywhere) float maxHealth;
 	UPROPERTY(EditAnywhere) float health;
@@ -47,13 +50,17 @@ public:
 	void Patrol();
 	void Chase();
 	void Attack();
-	
+	void countDown();
 	void flee();
 	bool isFleeing;
 	float speed = 6.0f;
 	FQuat rot;
 	UFUNCTION()
 		void UpdateHealth(float healthChange_);
+	UFUNCTION()
+		void OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor);
+
+
 private:
 	TArray<PathFindingNode*> openList;
 	TArray<PathFindingNode*> closeList;
@@ -66,6 +73,7 @@ private:
 	bool isPatroling;
 	bool atPointOne;
 	bool atSafeSpot;
-	
+	bool meleeAttack;
+	bool playerInRange;
 	int t = 50;
 };

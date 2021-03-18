@@ -30,9 +30,7 @@ public:
 	UPROPERTY(EditAnywhere)ACapstoneCharacter* Player;
 	UFUNCTION()
 		void OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor);
-	UFUNCTION()
-		void ShootingAtPlayer(AActor* MyOverlappedActor);
-
+	
 	void ShootProjectile(float Speed);
 	void DestoryObj();
 	float t = 100;

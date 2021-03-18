@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "EnemyRangeAttack.h"
+#include "ObstacleMesh.h"
 #include "CapstoneCharacter.h"
 #include "PathFinding.h"
 #include "Engine/Engine.h"
@@ -44,8 +45,7 @@ void AEnemyRangeAttack::Tick(float DeltaTime)
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("me: %f"), t));
 	}
 
-	//shooting at the player
-	ShootingAtPlayer(this);
+	
 	
 }
 
@@ -56,20 +56,23 @@ void AEnemyRangeAttack::OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor)
 	{
 		
 		class ACapstoneCharacter* MyCharacter = Cast<ACapstoneCharacter>(OtherActor);
-
+		class 	AObstacleMesh* Wall = Cast<AObstacleMesh>(OtherActor);
 		if (MyCharacter)
 		{
 			MyCharacter->UpdateHealth(-10.0f);
 			Destroy();
 		}
+
+		if (Wall) {
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT(" Ai hit wall %f"), t));
+			Destroy();
+		}
+
+
 	}
 }
 
-void AEnemyRangeAttack::ShootingAtPlayer(AActor* MyOverlappedActor)
-{
-	
 
-}
 
 void AEnemyRangeAttack::ShootProjectile(float Speed)
 {

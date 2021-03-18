@@ -19,10 +19,12 @@ APathFinding::APathFinding()
 void APathFinding::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	OnActorBeginOverlap.AddDynamic(this, &APathFinding::OnOverlap);
 	if (Target != nullptr) {
 		//UE_LOG(LogTemp, Log, TEXT("Start Path Finding : %s"), *Target->GetName());
 	}
+	meleeAttack = false;
+	playerInRange = false;
 	if (isRange == true) {
 		maxHealth = 100.0f;
 		health = maxHealth;
@@ -73,6 +75,23 @@ void APathFinding::Tick(float DeltaTime)
 			// run path finding
 		}
 	}
+
+	FVector AIPos = GetActorLocation();
+	FVector PlayerPos = player->GetActorLocation();
+	float distance = (AIPos - PlayerPos).Size();
+	//if the melee enemy can attack
+	if (meleeAttack == true) {
+		if (t == 0 && distance <= 300) {
+			//LookAtPlayer();
+			Attack();
+			meleeAttack = false;
+		}
+		else {
+			t -= 1;
+		}
+		
+	}
+	
 }
 
 void APathFinding::LookAtPlayer()
@@ -118,7 +137,22 @@ void APathFinding::Attack(){
 			t -= 1;
 		}
 	}
+	 if (isRange == false && health >= 0 && playerInRange == true) {
+		
+			player->UpdateHealth(-15.0f);
+			
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT(" attacking the player %f"), t));
+	}
 	
+}
+
+void APathFinding::countDown()
+{
+	t -= 1;
+	if (t == 0) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT(" attacking the player %f")));
+		Attack();
+	}
 }
 
 void APathFinding::flee(){
@@ -143,6 +177,30 @@ void APathFinding::UpdateHealth(float healthChange_)
 			}
 		}
 		Destroy();
+	}
+}
+
+void APathFinding::OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor)
+{
+	if (OtherActor != nullptr && OtherActor != this)
+	{
+
+		class ACapstoneCharacter* player = Cast<ACapstoneCharacter>(OtherActor);
+		
+		if (player)
+		{
+			//player->UpdateHealth(-10.0f);
+			playerInRange = true;
+			t = 100;
+			meleeAttack = true;
+		}
+		if(!player){
+			playerInRange = false;
+		}
+
+		
+
+
 	}
 }
 

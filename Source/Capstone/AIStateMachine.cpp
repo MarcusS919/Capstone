@@ -47,9 +47,9 @@ void AAIStateMachine::Tick(float DeltaTime)
 			currentState = ATTACK;
 		}
 		//for when the melee Ai can go to attack state
-		if (distance < 100 && Ai->isRange == false) {
+		/*if (distance < 300 && Ai->isRange == false) {
 			currentState = ATTACK;
-		}
+		}*/
 
 		if (distance < 300 && Ai->isRange == true) {
 			currentState = FLEE;
