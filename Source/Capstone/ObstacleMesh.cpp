@@ -2,6 +2,7 @@
 
 
 #include "ObstacleMesh.h"
+#include "AttackActor.h"
 #include "Engine/Engine.h"
 #include "Components/BoxComponent.h"
 
@@ -20,6 +21,7 @@ void AObstacleMesh::BeginPlay()
 	Super::BeginPlay();
 	
 	UBoxComponent* Component = Cast<UBoxComponent>(GetComponentByClass(UBoxComponent::StaticClass()));
+
 	if (Component) {
 		//UE_LOG(LogTemp, Warning, TEXT("Component Name : %s"), *Component->GetName());
 		
@@ -60,6 +62,8 @@ void AObstacleMesh::OnOverlapBegin(
 		FVector hitPosition = OtherActor->GetActorLocation();
 		AGrid* grid_ = dynamic_cast<AGrid*>(OtherActor);
 		grid_->checkWall = true;
+
+		
 
 	//	UE_LOG(LogTemp, Warning, TEXT("Obstacle Besin Collision : %d"), grid_->checkWall);
 		//UE_LOG(LogTemp, Warning, TEXT("%s : (%f, %f)"), *OverlappedComp->GetName(), hitPosition.X, hitPosition.Y);

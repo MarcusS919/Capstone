@@ -2,6 +2,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "AttackActor.h"
+#include "ObstacleMesh.h"
 #include "PathFinding.h"
 #include "Engine/Engine.h"
 
@@ -50,9 +51,16 @@ void AAttackActor::OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor)
 		
 		
 		class APathFinding* MyCharacter = Cast<APathFinding>(OtherActor);
+		class 	AObstacleMesh* Wall = Cast<AObstacleMesh>(OtherActor);
+
+	
 		if (MyCharacter)
 		{
 			MyCharacter->UpdateHealth(-50.0f);
+			Destroy();
+		}
+		if (Wall) {
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("I hit wall %f"), t));
 			Destroy();
 		}
 	}

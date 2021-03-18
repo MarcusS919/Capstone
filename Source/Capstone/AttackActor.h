@@ -29,6 +29,8 @@ public:
 		void OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor);
 
 	void ShootProjectile(float Speed);
+
+	
 	float t = 500;
 };
 

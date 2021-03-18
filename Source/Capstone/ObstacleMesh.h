@@ -36,4 +36,5 @@ public:
 	UPROPERTY(EditAnywhere) AGrid* grid = nullptr;
 
 	void checkNodes();
+
 };
