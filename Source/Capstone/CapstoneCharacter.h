@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "InteractionInterface.h"
 #include "AttackActor.h"
 #include "CapstoneCharacter.generated.h"
@@ -148,6 +149,9 @@ public:
 
 	UFUNCTION()
 		float GetMaxKills();
+
+	UFUNCTION()
+		void Death();
 
 	//UFUNCTION(BlueprintCallable, Category = "CollisionEvents")
 	//	void InteractonBoxBeginOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

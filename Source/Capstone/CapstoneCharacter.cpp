@@ -177,6 +177,10 @@ void ACapstoneCharacter::UpdateHealth(float healthChange_)
 	health = FMath::Clamp(health += healthChange_, 0.0f, maxHealth);
 	healthPercent = health / maxHealth;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("health: %f"), healthPercent));
+
+	if (healthPercent <= 0.0f) {
+		Death();
+	}
 }
 
 float ACapstoneCharacter::GetQuestUIStage()
@@ -209,6 +213,14 @@ float ACapstoneCharacter::GetKills()
 float ACapstoneCharacter::GetMaxKills()
 {
 	return maxKillCount;
+}
+
+void ACapstoneCharacter::Death()
+{
+	if (healthPercent <= 0.0f) {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("GameOver")));
+		UGameplayStatics::OpenLevel(GetWorld(), "GameOverMenuLevel");
+	}
 }
 
 void ACapstoneCharacter::Attack()
