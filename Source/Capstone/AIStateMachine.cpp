@@ -22,6 +22,12 @@ void AAIStateMachine::BeginPlay()
 void AAIStateMachine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (Ai->health <= 0) {
+		Destroy();
+		
+	}
+
 	AIPos = Ai->GetActorLocation();
 	PlayerPos = Player->GetActorLocation();
 	distance = (AIPos - PlayerPos).Size();

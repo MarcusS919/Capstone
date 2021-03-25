@@ -60,7 +60,7 @@ void AAttackActor::OnOverlap(AActor* MyOverlappedActor, AActor* OtherActor)
 			Destroy();
 		}
 		if (Wall) {
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT("I hit wall %f"), t));
+			
 			Destroy();
 		}
 	}

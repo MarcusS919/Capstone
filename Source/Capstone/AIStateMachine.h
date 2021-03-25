@@ -28,9 +28,7 @@ public:
 
 	UPROPERTY(EditAnywhere) APathFinding* Ai = nullptr;
 	UPROPERTY(EditAnywhere) AActor* Player = nullptr;
-	UPROPERTY(EditAnywhere) AActor* PortalPointOne = nullptr;
-	UPROPERTY(EditAnywhere) AActor* POrtalPointTwo = nullptr;
-	UPROPERTY(EditAnywhere) AActor* FleePoint = nullptr;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
