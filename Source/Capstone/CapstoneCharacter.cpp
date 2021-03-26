@@ -102,7 +102,18 @@ void ACapstoneCharacter::BeginPlay()
 	Super::BeginPlay();
 	//interactionBox->OnComponentBeginOverlap.AddDynamic(this, &ACapstoneCharacter::InteractonBoxBeginOverlap);
 	//interactionBox->OnComponentEndOverlap.AddDynamic(this, &ACapstoneCharacter::InteractonBoxEndOverlap);
+	maxHealth = 100.0f;
+	health = maxHealth;
+	healthPercent = 1.0f;
 
+	maxMana = 100.0f;
+	mana = maxMana;
+	manaPercent = 1.0f;
+	questStage = 0.0f;
+	killCount = 0.0f;
+	maxKillCount = 2.0f;
+
+	projectileSpeed = 1000.0f;
 }
 
 void ACapstoneCharacter::Tick(float DeltaSeconds)

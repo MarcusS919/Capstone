@@ -16,8 +16,11 @@ public:
 	// Sets default values for this actor's properties
 	ALevelChanger();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Name")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Changer Info")
 		FString levelString;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level Changer Info")
+		float questCompleteStage;
 
 protected:
 	// Called when the game starts or when spawned
